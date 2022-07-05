@@ -4,7 +4,6 @@ const postData = [
     {
         title: 'New Iphone',
         name: 'Vice',
-        created_at: '07/03/2022',
     },
 ];
 

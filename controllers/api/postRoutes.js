@@ -17,20 +17,13 @@ router.get('/', async (req, res) => {
                 },
             ],
         });
-
-        const posts = postData.map((post) => {
-            post.get({ plain: true });
-        });
-
-        res.render('homepage', {
-            posts,
-        });
+        res.status(200).json(postData);
     } catch (err) {
         res.status(500).json(err);
     }
 });
 
-router.get('/post/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const postData = await Post.findByPk(req.params.id, {
             include: [
@@ -41,10 +34,11 @@ router.get('/post/:id', async (req, res) => {
             ],
         });
 
-        const post = postData.get({ plain: true });
-        res.render('single-post', {
-            post,
-        });
+        if (!postData) {
+            res.status(404).json({ message: 'No post found with this id!' })
+            return;
+        }
+        res.status(200).json(postData);
     } catch (err) {
         res.status(500).json(err);
     }
@@ -66,14 +60,14 @@ router.put('/:id', async (req, res) => {
         const postData = await Post.update({
             title: req.body.title,
         },
-        {
-            where: {
-                id: req.params.id,
-            },
-        });
+            {
+                where: {
+                    id: req.params.id,
+                },
+            });
 
         if (!postData) {
-            res.status(404).json({ message: 'No post matching this id found!'})
+            res.status(404).json({ message: 'No post matching this id found!' })
             return;
         }
         res.status(200).json(postData);
@@ -91,7 +85,7 @@ router.delete('/:id', async (req, res) => {
         });
 
         if (!postData) {
-            res.status(404).json({ message: 'No post matching this id found!'})
+            res.status(404).json({ message: 'No post matching this id found!' })
             return;
         }
         res.status(200).json(postData);
