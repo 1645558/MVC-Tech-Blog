@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const sequelize = require('../config/connection');
-const { User, Post } = require('../models');
+const sequelize = require('../../config/connection');
+const { User, Post } = require('../../models');
 
 router.get('/', async (req, res) => {
     try {
@@ -67,6 +67,24 @@ router.put('/:id', async (req, res) => {
             title: req.body.title,
         },
         {
+            where: {
+                id: req.params.id,
+            },
+        });
+
+        if (!postData) {
+            res.status(404).json({ message: 'No post matching this id found!'})
+            return;
+        }
+        res.status(200).json(postData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    try {
+        const postData = await Post.destroy({
             where: {
                 id: req.params.id,
             },
