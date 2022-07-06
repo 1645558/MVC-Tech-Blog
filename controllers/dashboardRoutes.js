@@ -1,11 +1,15 @@
 const router = require("express").Router();
 const sequelize = require("../config/connection");
 const { User, Post } = require("../models");
+const withAuth = require("../utils/auth");
 
-router.get("/", async (req, res) => {
+router.get("/", withAuth, async (req, res) => {
   try {
     const postData = await Post.findAll({
-      attributes: ["id", "post_text", "title", "created_at"],
+      where: {
+        user_id: req.session.user_id,
+      },
+      attributes: ["id", "post_test", "title", "created_at"],
       include: [
         {
           model: Comment,
@@ -28,13 +32,10 @@ router.get("/", async (req, res) => {
       ],
     });
 
-    const posts = postData.map((post) => {
-      post.get({ plain: true });
-    });
-
-    res.render("homepage", {
+    const posts = postData.map((post) => post.get({ plain: true }));
+    res.render("dashboard", {
       posts,
-      loggedIn: req.session.loggedIn,
+      loggedIn: true,
       username: req.session.username,
     });
   } catch (err) {
@@ -42,20 +43,9 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/login", (req, res) => {
-  if (req.session.loggedIn) {
-    res.redirect("/");
-    return;
-  }
-  res.render("login");
-});
-
-router.get("/post/:id", async (req, res) => {
+router.get("/edit/:id", withAuth, async (req, res) => {
   try {
     const postData = await Post.findByPk(req.params.id, {
-      where: {
-        id: req.params.id,
-      },
       attributes: ["id", "post_text", "title", "created_at"],
       include: [
         {
@@ -79,17 +69,16 @@ router.get("/post/:id", async (req, res) => {
       ],
     });
 
-    if (!postData) {
-      res.status(404).json({ message: "No post matching this id!" });
-      return;
+    if (postData) {
+      const post = postData.get({ plain: true });
+      res.render("edit-post", {
+        post,
+        loggedIn: true,
+        username: req.session.username,
+      });
+    } else {
+      res.status(404).end();
     }
-
-    const post = postData.get({ plain: true });
-    res.render("single-post", {
-      post,
-      loggedIn: req.session.loggedIn,
-      username: req.session.username,
-    });
   } catch (err) {
     res.status(500).json(err);
   }

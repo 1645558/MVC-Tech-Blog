@@ -1,5 +1,10 @@
 <div class="card">
-    <a href="/post/{{id}}">Title: {{title}} </a>
-    <h4>Username: {{name}}</h4>
-        <p>Created at: {{created_at}}</p>
+    <a href="/post/{{id}}">Title: {{title}}</a>
+    <h4>Username: {{user.username}}</h4>
+        <p>Created at: {{format_date created_at}}</p>
+        <p>Post: {{post_text}}</p>
+</div>
+
+<div>
+    <a href="/post/{{id}}">{{comments.length}}</a>
 </div>
