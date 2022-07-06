@@ -1,5 +1,7 @@
 <div class="card">
-{{#each posts as |post|}}
-{{> post-info post}}
-{{/each}}
+    {{#each posts as |post|}}
+    {{> post-info post}}
+    {{else}}
+    <h6 class='text-center'>There are currently no posts</h6>
+    {{/each}}
 </div>
