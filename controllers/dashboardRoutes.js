@@ -77,7 +77,7 @@ router.get("/edit/:id", withAuth, async (req, res) => {
         username: req.session.username,
       });
     } else {
-      res.status(404).end();
+      res.status(404).json({ message: 'No post matching this id!'});
     }
   } catch (err) {
     res.status(500).json(err);
