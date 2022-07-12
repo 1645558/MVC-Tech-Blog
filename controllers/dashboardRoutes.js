@@ -12,6 +12,10 @@ router.get("/", withAuth, async (req, res) => {
       attributes: ["id", "post_text", "title", "created_at"],
       include: [
         {
+          model: User,
+          attributes: ["username"],
+        },
+        {
           model: Comment,
           attributes: [
             "id",
@@ -25,18 +29,13 @@ router.get("/", withAuth, async (req, res) => {
             attributes: ["username"],
           },
         },
-        {
-          model: User,
-          attributes: ["username"],
-        },
       ],
     });
 
     const posts = postData.map((post) => post.get({ plain: true }));
     res.render("dashboard", {
       posts,
-      loggedIn: true,
-      username: req.session.username,
+      loggedIn: true
     });
   } catch (err) {
     res.status(500).json(err);
@@ -45,7 +44,7 @@ router.get("/", withAuth, async (req, res) => {
 
 router.get("/edit/:id", withAuth, async (req, res) => {
   try {
-    const postData = await Post.findByPk(req.params.id, {
+    const postData = await Post.findOne({ where: { id: req.params.id }, 
       attributes: ["id", "post_text", "title", "created_at"],
       include: [
         {
@@ -74,7 +73,6 @@ router.get("/edit/:id", withAuth, async (req, res) => {
       res.render("edit-post", {
         post,
         loggedIn: true,
-        username: req.session.username,
       });
     } else {
       res.status(404).json({ message: 'No post matching this id!'});

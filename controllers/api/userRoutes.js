@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const sequelize = require("../../config/connection");
 const { Post, User, Comment } = require("../../models");
+const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 router.get("/", async (req, res) => {
   try {
@@ -15,7 +17,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const userData = await User.findByPk(req.params.id, {
+    const userData = await User.findOne({
       attributes: { exclude: ["password"] },
       where: {
         id: req.params.id,
@@ -66,10 +68,7 @@ router.post("/", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const userData = await User.findByPk({
-      where: {
-        email: req.body.email,
-      },
+    const userData = await User.findOne({ where: { email: req.body.email },
     });
 
     if (!userData) {

@@ -8,6 +8,10 @@ router.get("/", async (req, res) => {
       attributes: ["id", "post_text", "title", "created_at"],
       include: [
         {
+          model: User,
+          attributes: ["username"],
+        },
+        {
           model: Comment,
           attributes: [
             "id",
@@ -20,10 +24,6 @@ router.get("/", async (req, res) => {
             model: User,
             attributes: ["username"],
           },
-        },
-        {
-          model: User,
-          attributes: ["username"],
         },
       ],
     });
@@ -35,29 +35,21 @@ router.get("/", async (req, res) => {
     res.render("homepage", {
       posts,
       loggedIn: req.session.loggedIn,
-      username: req.session.username,
     });
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
-router.get("/login", (req, res) => {
-  if (req.session.loggedIn) {
-    res.redirect("/");
-    return;
-  }
-  res.render("login");
-});
-
 router.get("/post/:id", async (req, res) => {
   try {
-    const postData = await Post.findByPk(req.params.id, {
-      where: {
-        id: req.params.id,
-      },
+    const postData = await Post.findOne({ where: { id: req.params.id },
       attributes: ["id", "post_text", "title", "created_at"],
       include: [
+        {
+          model: User,
+          attributes: ["username"],
+        },
         {
           model: Comment,
           attributes: [
@@ -71,11 +63,7 @@ router.get("/post/:id", async (req, res) => {
             model: User,
             attributes: ["username"],
           },
-        },
-        {
-          model: User,
-          attributes: ["username"],
-        },
+        }, 
       ],
     });
 
@@ -88,11 +76,18 @@ router.get("/post/:id", async (req, res) => {
     res.render("single-post", {
       post,
       loggedIn: req.session.loggedIn,
-      username: req.session.username,
     });
   } catch (err) {
     res.status(500).json(err);
   }
+});
+
+router.get("/login", (req, res) => {
+  if (req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+  res.render("login");
 });
 
 module.exports = router;
