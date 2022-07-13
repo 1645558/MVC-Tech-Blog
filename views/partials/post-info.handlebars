@@ -3,8 +3,9 @@
     <p>Username: {{user.username}}</p>
         <p>Created at: {{format_date created_at}}</p>
         <p>Post: {{post_text}}</p>
+        <a href="/api/posts/{{id}}">Title{{comments.length}}</a>
 </div>
 
-<div>
+{{!-- <div>
     <a href="/post/{{id}}">{{comments.length}}</a>
-</div>
+</div> --}}

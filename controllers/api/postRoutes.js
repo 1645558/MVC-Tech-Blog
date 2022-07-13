@@ -35,7 +35,7 @@ router.get("/", withAuth, async (req, res) => {
   }
 });
 
-router.get("/:id", withAuth, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const postData = await Post.findOne({ where: { id: req.params.id }, 
       attributes: ["id", "post_text", "title", "created_at"],
